@@ -38,7 +38,9 @@ const App = () => {
           calculation[0] == null
         ) {
           setCalculation([]);
-        } else {
+        } else if(keyBoardClick == "." && calculation.at(-1) == "."){
+          setCalculation([...calculation])
+        }else {
           setCalculation([...calculation, keyBoardClick]);
         }
       } else if (keyBoardClickCode == 57 || keyBoardClickCode == 48) {
@@ -72,11 +74,12 @@ const App = () => {
           break;
 
         case "=":
-          setValue(eval(calculation.join("")));
+            setValue(eval(calculation.join("")));
           break;
 
         default:
           const screenBoardClick = e.target.innerText;
+
           if (
             screenBoardClick == calculation.at(-1) &&
             screenBoardClick == "-"
@@ -88,12 +91,15 @@ const App = () => {
               setCalculation([...calculation]);
             }
           } else {
+            
             if (
               ["+", "*", "/"].includes(screenBoardClick) &&
               ["+", "-", "*", "/"].includes(calculation.at(-1))
             ) {
               setCalculation([...calculation]);
-            } else {
+            }else if(screenBoardClick == "." && calculation.at(-1) == "."){
+              setCalculation([...calculation])
+            }else {
               setCalculation([...calculation, screenBoardClick]);
             }
           }
