@@ -3,33 +3,50 @@ import Button from "./Button";
 import Screen from "./Screen";
 import ThemeMode from "./ThemeMode";
 
-
-
 const App = () => {
   const [value, setValue] = useState(null);
   const [calculation, setCalculation] = useState([]);
 
-
- 
-
   // Effect to handle keyboard actions
   useEffect(() => {
     const keyboardAction = (e) => {
-      // console.log(e, e.keyCode);
-      if (e.key === "Backspace") {
+      let keyBoardClick = e.key;
+      let keyBoardClickCode = e.keyCode;
+      console.log(keyBoardClick, keyBoardClickCode);
+      if (keyBoardClick === "Backspace") {
         setCalculation((prevCalculation) => prevCalculation.slice(0, -1));
         setValue(null);
-      } else if (e.key === "Delete") {
+      } else if (keyBoardClick === "Delete") {
         setCalculation([]);
         setValue(null);
-      } else if (e.keyCode >= 96 && e.keyCode <= 111 && e.keyCode !== 108) {
-        setCalculation((prevCalculation) => [...prevCalculation, e.key]);
-      } else if(e.keyCode == 57 || e.keyCode == 48){
-        setCalculation((prevCalculation) => [...prevCalculation, e.key]);
-      } else if(e.key === "Enter"){
-        setValue(eval(calculation.join('')))
-      }else {
-        console.log(`Unhandled key: ${e.key}`);
+      } else if (
+        keyBoardClickCode >= 96 &&
+        keyBoardClickCode <= 111 &&
+        keyBoardClickCode !== 108
+      ) {
+        if (
+          ["+", "-", "/", "*"].includes(keyBoardClick) &&
+          ["+", "-", "/", "*"].includes(calculation.at(-1))
+        ) {
+          if (keyBoardClick == "-" && ["/", "*"].includes(calculation.at(-1))) {
+            setCalculation([...calculation, keyBoardClick]);
+          }else{
+            setCalculation([...calculation]);
+          }
+        } else if (
+          ["+", "/", "*"].includes(keyBoardClick) &&
+          calculation[0] == null
+        ) {
+          setCalculation([]);
+        } else {
+          setCalculation([...calculation, keyBoardClick]);
+        }
+      } else if (keyBoardClickCode == 57 || keyBoardClickCode == 48) {
+        setCalculation([...calculation, keyBoardClick]);
+      } else if (keyBoardClick === "Enter") {
+        setValue(eval(calculation.join("")));
+      } else {
+        console.log(`Unhandled key: ${keyBoardClick}`);
       }
     };
 
@@ -59,14 +76,37 @@ const App = () => {
           break;
 
         default:
-          setCalculation([...calculation, e.target.innerText]);
+          const screenBoardClick = e.target.innerText;
+          if (
+            screenBoardClick == calculation.at(-1) &&
+            screenBoardClick == "-"
+          ) {
+            if (
+              ["+", "*", "/"].includes(screenBoardClick) &&
+              ["+", "-", "*", "/"].includes(calculation.at(-1))
+            ) {
+              setCalculation([...calculation]);
+            }
+          } else {
+            if (
+              ["+", "*", "/"].includes(screenBoardClick) &&
+              ["+", "-", "*", "/"].includes(calculation.at(-1))
+            ) {
+              setCalculation([...calculation]);
+            } else {
+              setCalculation([...calculation, screenBoardClick]);
+            }
+          }
       }
     }
   };
 
   return (
     <>
-      <section id="bodyChange" className="bodyChange relative bg-light-theme-color h-[100vh] flex place-items-center p-10">
+      <section
+        id="bodyChange"
+        className="bodyChange relative bg-light-theme-color h-[100vh] flex place-items-center p-10"
+      >
         <div className="absolute text-[2.5rem] sm:text-[3rem] top-[4%] right-[4%] cursor-pointer">
           <ThemeMode />
         </div>
@@ -75,7 +115,8 @@ const App = () => {
 
           <div
             className="grid grid-cols-4 text-[1.5rem] sm:text-[2rem] font-bold gap-4 text-light-text-color"
-            onClick={inputValue}>
+            onClick={inputValue}
+          >
             <Button />
           </div>
         </div>
